@@ -6,13 +6,13 @@ import { TreeItem }                       from '@mui/x-tree-view';
 import CollapseIcon                       from '@mui/icons-material/ExpandMore';
 import ExpandIcon                         from '@mui/icons-material/ChevronRight';
 
+import { truthy }              from '../../utils/commonFunctions';
 import { fakeItems }           from '../../utils/fakeData';
 import { NestedAccordionNode } from '../../utils/types';
 import { Search }              from '../Search';
+import { Modal }               from '../Modal';
 import { DragAndDrop }         from '../DragAndDrop';
 import { TreeItemLabel }       from './TreeItemLabel';
-import { Modal } from '../Modal';
-import { truthy } from '../../utils/commonFunctions';
 
 const searchNode = (node: NestedAccordionNode, searchTerm: string): NestedAccordionNode | null=> {
   const isDisabled = (item: NestedAccordionNode) => hasDisabledEveryChildren(item) ?? !!item.isDisabled;
@@ -158,8 +158,8 @@ export const TreeViewComponent = () => {
           defaultCollapseIcon = {<CollapseIcon />}
           defaultExpandIcon   = {<ExpandIcon />}
         >
-          <DragAndDrop items={matchingNodes}></DragAndDrop>
-          {/* {matchingNodes.map((item, index) => renderTreeItems(item, index.toString()))} */}
+          {/* <DragAndDrop items={matchingNodes}></DragAndDrop> */}
+          {matchingNodes.map((item, index) => renderTreeItems(item, index.toString()))}
         </TreeView>
       </DragDropContext>
 
