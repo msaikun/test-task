@@ -36,7 +36,8 @@ export const fakeItems: NestedAccordionNode[] = [
       },
       {
         id    : '7',
-        label : 'SubiElement 1.2',
+        label : 'SubElement 2.2',
+        children : [{ id: '20', label: '20', isDisabled: true }],
       },
     ],
     id    : '5',
@@ -49,7 +50,7 @@ export const fakeItems: NestedAccordionNode[] = [
       },
       {
         id    : '10',
-        label : 'SubiElement 3.2',
+        label : 'SubElement 3.2',
       },
     ],
     id    : '8',
