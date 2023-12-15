@@ -6,23 +6,24 @@ import { TreeItem }                       from '@mui/x-tree-view';
 import CollapseIcon                       from '@mui/icons-material/ExpandMore';
 import ExpandIcon                         from '@mui/icons-material/ChevronRight';
 
-import { truthy }              from '../../utils/commonFunctions';
+import {
+  hasAtLeastOneChildDisabled,
+  hasEveryChildDisabled,
+  truthy
+}                              from '../../utils/commonFunctions';
 import { fakeItems }           from '../../utils/fakeData';
 import { NestedAccordionNode } from '../../utils/types';
 import { Search }              from '../Search';
 import { Modal }               from '../Modal';
-import { DragAndDrop }         from '../DragAndDrop';
 import { TreeItemLabel }       from './TreeItemLabel';
 
-const searchNode = (node: NestedAccordionNode, searchTerm: string): NestedAccordionNode | null=> {
-  const isDisabled = (item: NestedAccordionNode) => hasDisabledEveryChildren(item) ?? !!item.isDisabled;
-
+const searchNode = (node: NestedAccordionNode, searchTerm: string): NestedAccordionNode | null => {
   if (node.label.toLowerCase().includes(searchTerm.toLowerCase())) {
-    return { ...node, isDisabled: isDisabled(node) };
+    return { ...node, isDisabled: hasEveryChildDisabled(node)};
   }
 
   const matchingChildren = node.children ? node.children.filter((child) => {
-    const result = searchNode({ ...child, isDisabled: isDisabled(child) }, searchTerm);
+    const result = searchNode(child, searchTerm);
 
     return result !== null;
   }) : [];
@@ -31,23 +32,7 @@ const searchNode = (node: NestedAccordionNode, searchTerm: string): NestedAccord
     return null;
   }
 
-  return { ...node, isDisabled: isDisabled(node), children: matchingChildren };
-};
-
-const hasDisabledChildren = (node: NestedAccordionNode) => {
-  if (node.children) {
-    return !node.children.some(hasDisabledChildren);
-  }
-
-  return false;
-};
-
-const hasDisabledEveryChildren = (node: NestedAccordionNode): boolean => {
-  if (node.children) {
-    return node.children.every(hasDisabledEveryChildren);
-  }
-
-  return false;
+  return { ...node, children: matchingChildren };
 };
 
 export const TreeViewComponent = () => {
@@ -61,7 +46,7 @@ export const TreeViewComponent = () => {
   [nodes, searchTerm]);
 
   const keepOnlyNodesWithDisabledChildren = (node: NestedAccordionNode): any => {
-    const filteredChildren = (node.children || []).map(keepOnlyNodesWithDisabledChildren).filter(Boolean);
+    const filteredChildren = (node.children || []).map(keepOnlyNodesWithDisabledChildren).filter(truthy);
 
     if (node.isDisabled || filteredChildren.length) {
       return { ...node, children: filteredChildren };
@@ -70,24 +55,26 @@ export const TreeViewComponent = () => {
     return null;
   };
 
-  const removeNotDisabledChildren = (node: NestedAccordionNode): void => {
-    setNodes((prevNodes) => {
-      const updatedNodes = prevNodes.map((prevNode) => {
-        if (prevNode.id === node.id) {
-          return keepOnlyNodesWithDisabledChildren(node);
-        }
-        return prevNode;
-      });
+  const removeNotDisabledChildren = useCallback(() => {
+    nodeToDelete && (
+      setNodes((prevNodes) => {
+        const updatedNodes = prevNodes.map((prevNode) => {
+          if (prevNode.id === nodeToDelete.id) {
+            return keepOnlyNodesWithDisabledChildren(nodeToDelete);
+          }
 
-      return updatedNodes;
-    });
-  };
+          return prevNode;
+        });
 
+        return updatedNodes;
+      })
+    );
+  }, [nodeToDelete, setNodes]);
 
   const onRemoveNode = useCallback((node: NestedAccordionNode) => {
     if (node.isDisabled) return;
 
-    if (hasDisabledChildren(node)) {
+    if (hasAtLeastOneChildDisabled(node)) {
       setNodeToDelete(node);
     } else {
       setNodes((prevNodes) => {
@@ -104,7 +91,7 @@ export const TreeViewComponent = () => {
         return removeNode(prevNodes);
       });
     }
-  }, [setNodes, hasDisabledChildren]);
+  }, [setNodes, hasAtLeastOneChildDisabled]);
 
   const renderTreeItems = useCallback(
     (item: NestedAccordionNode, index: string) => (
@@ -142,12 +129,12 @@ export const TreeViewComponent = () => {
   );
 
   const handleModalSubmit = useCallback(() => {
-    nodeToDelete && removeNotDisabledChildren(nodeToDelete);
-    setNodeToDelete(null)
+    nodeToDelete && removeNotDisabledChildren();
+    setNodeToDelete(null);
   }, [nodeToDelete, removeNotDisabledChildren]);
 
   return (
-    <>
+    <TreeViewComponent.Wrapper>
       <Search searchInputValue={searchTerm} handleSearchInput={setSearchTerm} />
       <TreeViewComponent.Divider>All Elements</TreeViewComponent.Divider>
 
@@ -159,7 +146,10 @@ export const TreeViewComponent = () => {
           defaultExpandIcon   = {<ExpandIcon />}
         >
           {/* <DragAndDrop items={matchingNodes}></DragAndDrop> */}
-          {matchingNodes.map((item, index) => renderTreeItems(item, index.toString()))}
+          {matchingNodes.length
+            ? matchingNodes.map((item, index) => renderTreeItems(item, index.toString()))
+            : <TreeViewComponent.NoData>No data found...</TreeViewComponent.NoData>
+          }
         </TreeView>
       </DragDropContext>
 
@@ -170,16 +160,27 @@ export const TreeViewComponent = () => {
         handleClose  = {() => setNodeToDelete(null)}
         handleSubmit = {handleModalSubmit}
       />
-    </>
+    </TreeViewComponent.Wrapper>
   );
 }
+
+TreeViewComponent.Wrapper = styled.div`
+`;
+
+TreeViewComponent.NoData = styled.div`
+  display         : flex;
+  justify-content : center;
+  padding-top     : 20px;
+  font-size       : 12px;
+  color           : ${({ theme }) => theme.colors.grey};
+`;
 
 TreeViewComponent.Divider = styled.div`
   align-items      : center;
   background-color : ${({ theme }) => theme.colors.tealHover};
   color            : ${({ theme }) => theme.colors.white};
   display          : flex;
-  height           : 32px;
-  font-size        : 14px;
-  padding-left     : 8px;
+  height           : 30px;
+  font-size        : 12px;
+  padding-left     : 10px;
 `;

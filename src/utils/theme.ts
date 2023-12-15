@@ -4,6 +4,7 @@ export const theme = {
   colors: {
     tealHover : '#3D7F85',
     white     : '#FFF',
+    grey      : '#767676',
   },
 };
 

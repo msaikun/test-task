@@ -27,9 +27,9 @@ export const Modal = ({
   handleSubmit
 }: IModalProps) => {
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <Dialog open={open} onClose={handleClose}>
       {title && <DialogTitle>{title}</DialogTitle>}
-      
+
       <DialogContent>{content}</DialogContent>
 
       <DialogActions>

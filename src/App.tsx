@@ -1,11 +1,10 @@
 import './App.css';
+import { TreeViewComponent } from './components/TreeView/TreeView';
 
-function App() {
-  return (
-    <div>
-      Hello World
-    </div>
-  );
-}
+const App = () => (
+  <>
+    <TreeViewComponent />
+  </>
+);
 
 export default App;
