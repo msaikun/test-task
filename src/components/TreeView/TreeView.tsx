@@ -44,18 +44,19 @@ export const TreeViewComponent = () => {
     .filter(truthy),
   [nodes, searchTerm]);
 
-  const keepOnlyNodesWithDisabledChildren = (node: NestedAccordionNode): any => {
-    const filteredChildren = (node.children || []).map(keepOnlyNodesWithDisabledChildren).filter(truthy);
+  const keepOnlyNodesWithDisabledChildren = useCallback((node: NestedAccordionNode) => {
+    const filteredChildren: NestedAccordionNode[] = (node.children || [])
+      .map(keepOnlyNodesWithDisabledChildren).filter(truthy);
 
     if (node.isDisabled || filteredChildren.length) {
       return { ...node, children: filteredChildren };
     }
 
     return null;
-  };
+  }, []);
 
   const removeNotDisabledChildren = useCallback(() => {
-    nodeToDelete && (
+    if (nodeToDelete) {
       setNodes((prevNodes) => {
         const updatedNodes = prevNodes.map((prevNode) => {
           if (prevNode.id === nodeToDelete.id) {
@@ -65,10 +66,10 @@ export const TreeViewComponent = () => {
           return prevNode;
         });
 
-        return updatedNodes;
-      })
-    );
-  }, [nodeToDelete, setNodes]);
+        return updatedNodes.filter(truthy);
+      });
+    }
+  }, [nodeToDelete]);
 
   const onRemoveNode = useCallback((node: NestedAccordionNode) => {
     if (node.isDisabled) return;
@@ -90,7 +91,7 @@ export const TreeViewComponent = () => {
         return removeNode(prevNodes);
       });
     }
-  }, [setNodes, hasAtLeastOneChildDisabled]);
+  }, [hasAtLeastOneChildDisabled]);
 
   const renderTreeItems = useCallback(
     (item: NestedAccordionNode, index: string) => (
@@ -109,28 +110,29 @@ export const TreeViewComponent = () => {
         {item.children?.map((child, childIndex) => renderTreeItems(child, `${index}.${childIndex}`))}
       </TreeItem>
     ),
-    [onRemoveNode],
+    [],
   );
 
-  const handleMoveItems = useCallback(
-    (dropResult: DropResult) => {
-      const destinationIndex = dropResult.destination?.index ?? 0;
+  const handleMoveItems = useCallback((dropResult: DropResult) => {
+    const destinationIndex = dropResult.destination?.index ?? 0;
 
-      setNodes((prevNodes) => {
-        const newNodes = [...prevNodes];
+    setNodes((prevNodes) => {
+      const newNodes = [...prevNodes];
 
-        newNodes.splice(destinationIndex, 0, ...newNodes.splice(dropResult.source.index, 1));
+      newNodes.splice(destinationIndex, 0, ...newNodes.splice(dropResult.source.index, 1));
 
-        return newNodes;
-      });
-    },
-    [setNodes],
-  );
+      return newNodes;
+    }
+  )}, []);
 
   const handleModalSubmit = useCallback(() => {
     nodeToDelete && removeNotDisabledChildren();
     setNodeToDelete(null);
   }, [nodeToDelete, removeNotDisabledChildren]);
+
+  const handleModalClose = () => {
+    setNodeToDelete(null);
+  };
 
   return (
     <TreeViewComponent.Wrapper>
@@ -142,10 +144,10 @@ export const TreeViewComponent = () => {
       </DragDropContext>
 
       <Modal
-        open         = {!!nodeToDelete}
+        open         = {truthy(nodeToDelete)}
         title        = "Confirmation"
         content      = "You don't have full rights to delete certain items. Do you want to delete the available ones?"
-        handleClose  = {() => setNodeToDelete(null)}
+        handleClose  = {handleModalClose}
         handleSubmit = {handleModalSubmit}
       />
     </TreeViewComponent.Wrapper>
