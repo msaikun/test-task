@@ -1,10 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { styled }                         from 'styled-components';
 import { DragDropContext, DropResult }    from 'react-beautiful-dnd';
-import { TreeView }                       from '@mui/x-tree-view/TreeView';
+import { Paper }                          from '@mui/material';
 import { TreeItem }                       from '@mui/x-tree-view';
-import CollapseIcon                       from '@mui/icons-material/ExpandMore';
-import ExpandIcon                         from '@mui/icons-material/ChevronRight';
 
 import {
   hasAtLeastOneChildDisabled,
@@ -14,6 +12,7 @@ import {
 import { fakeItems }           from '../../utils/fakeData';
 import { NestedAccordionNode } from '../../utils/types';
 import { Search }              from '../Search';
+import { DragAndDrop }         from '../DragAndDrop';
 import { Modal }               from '../Modal';
 import { TreeItemLabel }       from './TreeItemLabel';
 
@@ -139,18 +138,7 @@ export const TreeViewComponent = () => {
       <TreeViewComponent.Divider>All Elements</TreeViewComponent.Divider>
 
       <DragDropContext onDragEnd={(dropResult: DropResult) => handleMoveItems(dropResult)}>
-        <TreeView
-          multiSelect
-          aria-label          = "items"
-          defaultCollapseIcon = {<CollapseIcon />}
-          defaultExpandIcon   = {<ExpandIcon />}
-        >
-          {/* <DragAndDrop items={matchingNodes}></DragAndDrop> */}
-          {matchingNodes.length
-            ? matchingNodes.map((item, index) => renderTreeItems(item, index.toString()))
-            : <TreeViewComponent.NoData>No data found...</TreeViewComponent.NoData>
-          }
-        </TreeView>
+        <DragAndDrop items={matchingNodes} renderTreeItems={renderTreeItems} />
       </DragDropContext>
 
       <Modal
@@ -164,15 +152,9 @@ export const TreeViewComponent = () => {
   );
 }
 
-TreeViewComponent.Wrapper = styled.div`
-`;
-
-TreeViewComponent.NoData = styled.div`
-  display         : flex;
-  justify-content : center;
-  padding-top     : 20px;
-  font-size       : 12px;
-  color           : ${({ theme }) => theme.colors.grey};
+TreeViewComponent.Wrapper = styled(Paper)`
+  margin  : 20px;
+  padding : 10px;
 `;
 
 TreeViewComponent.Divider = styled.div`
