@@ -1,0 +1,23 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "${HOST_PORT:-8001}:8001"
+    environment:
+      PORT: 8001
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  client:
+    build:
+      context: ./client
+    ports:
+      - "${FRONTEND_HOST_PORT:-3000}:3000"
+  mongodb:
+    image: mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      
