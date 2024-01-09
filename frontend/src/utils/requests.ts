@@ -1,7 +1,8 @@
-import { enqueueSnackbar } from "notistack";
-import { apiCaller } from "./apiCaller";
-import { commonErrorHandler } from "./commonFunctions";
-import { IPlace, IViewport } from "./types";
+import { enqueueSnackbar } from 'notistack';
+
+import { apiCaller }          from './apiCaller';
+import { commonErrorHandler } from './commonFunctions';
+import { IPlace, IViewport }  from './types';
 
 export const getAllPlaces = async (data: IViewport) => {
   try {
@@ -9,7 +10,6 @@ export const getAllPlaces = async (data: IViewport) => {
 
     return response.data;
   } catch (error) {
-    console.log('error', error);
     commonErrorHandler(error);
   }
 };
@@ -20,7 +20,6 @@ export const getPlaceById = async (id: string) => {
 
     return response.data;
   } catch (error) {
-    console.log('error', error);
     commonErrorHandler(error);
   }
 }

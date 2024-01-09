@@ -1,29 +1,30 @@
 import GoogleMapReact, { Props as GoogleMapReactProps } from 'google-map-react';
-import { useCallback, useRef } from 'react';
-import styled from 'styled-components';
-import { ILocation, IPlace } from '../utils/types';
+import { useCallback, useRef }                          from 'react';
+import styled                                           from 'styled-components';
+
+import { ILocation, IPlace }                  from '../utils/types';
 import { getBoundaries, getInfoWindowString } from '../utils/commonFunctions';
 
 const DEFAULT_PLACEMENT = { lat: 34.0828183, lng: -118.3241586 };
 
 interface IGoogleMapProps {
-  places: IPlace[];
-  zoom?: number;
-  height?: string;
-  width?: string;
-  errorMsg?: string;
-  withAbilityToOpenManyInfoWindows?: boolean;
-  onMapSizeChange?: (northeast: ILocation, southwest: ILocation) => void;
-  onMapClick?: (values: ILocation) => void;
+  places               : IPlace[];
+  zoom?                : number;
+  height?              : string;
+  width?               : string;
+  errorMsg?            : string;
+  openManyInfoWindows? : boolean;
+  onMapSizeChange?     : (northeast: ILocation, southwest: ILocation) => void;
+  onMapClick?          : (values: ILocation) => void;
 }
 
 export const GoogleMap = ({
   width,
   height,
   places,
-  errorMsg = '',
-  withAbilityToOpenManyInfoWindows = false,
-  zoom = 10,
+  errorMsg            = '',
+  openManyInfoWindows = false,
+  zoom                = 10,
   onMapClick,
   onMapSizeChange,
   ...props
@@ -57,7 +58,7 @@ export const GoogleMap = ({
       allInfoWindows.push(infowindow);
 
       marker.addListener('click', () => {
-        if (!withAbilityToOpenManyInfoWindows) {
+        if (!openManyInfoWindows) {
           openInfoWindows.forEach((infoWindow) => infoWindow.close());
           openInfoWindows.length = 0;
         }
@@ -79,7 +80,7 @@ export const GoogleMap = ({
       const boundaries = getBoundaries(map, zoom);
       onMapSizeChange(boundaries.northeast, boundaries.southwest);
     }
-  }, [mapRef, withAbilityToOpenManyInfoWindows, onMapClick, onMapSizeChange]);
+  }, [mapRef, openManyInfoWindows, onMapClick, onMapSizeChange]);
 
   const handleMapClick = useCallback(({ lat, lng }: ILocation) => {
     if (places.length) return;
@@ -107,12 +108,12 @@ export const GoogleMap = ({
       <GoogleMapReact
         {...props}
         yesIWantToUseGoogleMapApiInternals
-        defaultCenter={DEFAULT_PLACEMENT}
-        defaultZoom={zoom}
-        onChange={(data) => onMapSizeChange?.({ lat: data.bounds.ne.lat, lng: data.bounds.ne.lng }, { lat: data.bounds.sw.lat, lng: data.bounds.sw.lng })}
-        onClick={handleMapClick}
-        onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps, places)}
-        bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_API_KEY || '' }}
+        defaultCenter     = {DEFAULT_PLACEMENT}
+        defaultZoom       = {zoom}
+        onChange          = {({ bounds: { ne, sw }}) => onMapSizeChange?.({ lat: ne.lat, lng: ne.lng }, { lat: sw.lat, lng: sw.lng })}
+        onClick           = {handleMapClick}
+        onGoogleApiLoaded = {({ map, maps }) => handleApiLoaded(map, maps, places)}
+        bootstrapURLKeys  = {{ key: process.env.REACT_APP_GOOGLE_API_KEY || '' }}
       />
 
       <GoogleMap.Error>{errorMsg}</GoogleMap.Error>

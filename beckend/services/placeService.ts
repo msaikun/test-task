@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import { ILocation, IPlace, placeSchema } from './interfaces';
 
 const Place = mongoose.model<IPlace>('Place', placeSchema);

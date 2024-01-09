@@ -1,6 +1,6 @@
-import { IPlace } from "./types";
-import { Notification } from '../components/Notistack';
-import { enqueueSnackbar } from "notistack";
+import { enqueueSnackbar } from 'notistack';
+
+import { IPlace } from './types';
 
 type TDebouncedFunction = (...args: any[]) => void;
 

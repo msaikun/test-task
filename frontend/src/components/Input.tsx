@@ -1,19 +1,19 @@
-import { styled } from 'styled-components';
-import { TextField, Tooltip } from '@mui/material';
-import { FieldProps, getIn } from 'formik';
+import { FieldProps, getIn }        from 'formik';
 import { ChangeEvent, useCallback } from 'react';
+import { styled }                   from 'styled-components';
+import { TextField, Tooltip }       from '@mui/material';
 
 interface IInputProps extends FieldProps {
-  label?: string;
-  disabled?: boolean;
-  isRequired?: boolean;
-  placeholder: string;
-  type?: string;
-  helperText: string;
-  name: string;
-  value: string;
-  error?: string;
-  onChange: (value: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  label?      : string;
+  disabled?   : boolean;
+  isRequired? : boolean;
+  placeholder : string;
+  type?       : string;
+  helperText  : string;
+  name        : string;
+  value       : string;
+  error?      : string;
+  onChange    : (value: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
 export const Input = ({
@@ -21,7 +21,7 @@ export const Input = ({
   field,
   label,
   disabled = false,
-  type = 'text',
+  type     = 'text',
   placeholder,
   name,
   value,
@@ -48,16 +48,16 @@ export const Input = ({
       <Tooltip title={error}>
         <TextField
           {...props}
-          size="small"
           fullWidth
-          label={label}
-          name={name}
-          disabled={disabled}
-          error={!!error}
-          type={type}
-          value={value}
-          placeholder={placeholder}
-          onChange={onChangeInternal}
+          size        = "small"
+          label       = {label}
+          name        = {name}
+          disabled    = {disabled}
+          error       = {!!error}
+          type        = {type}
+          value       = {value}
+          placeholder = {placeholder}
+          onChange    = {onChangeInternal}
         />
       </Tooltip>
     </Input.Container>

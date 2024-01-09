@@ -1,12 +1,12 @@
-import { ThemeProvider } from 'styled-components';
-import { createRoot } from 'react-dom/client';
-
-import { GlobalStyles, theme } from './utils/theme';
-import App                     from './App';
+import { SnackbarProvider }     from 'notistack';
 import { StrictMode, Suspense } from 'react';
-import { Notification } from './components/Notistack';
-import { SnackbarProvider } from 'notistack';
-import { CircularProgress } from '@mui/material';
+import { createRoot }           from 'react-dom/client';
+import { ThemeProvider }        from 'styled-components';
+import { CircularProgress }     from '@mui/material';
+
+import App                     from './App';
+import { Notification }        from './components/Notistack';
+import { GlobalStyles, theme } from './utils/theme';
 
 const container = document.getElementById('root');
 const root = createRoot(container as any);

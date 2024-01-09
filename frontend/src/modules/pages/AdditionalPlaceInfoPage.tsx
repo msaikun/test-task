@@ -1,10 +1,11 @@
+import { useEffect, useState }    from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { IconButton } from '@mui/material';
-import { getPlaceById } from '../../src/utils/requests';
-import { InfoCard } from '../../src/components/InfoCard';
-import { useEffect, useState } from 'react';
-import { IPlace } from '../../src/utils/types';
+import ArrowBackIcon              from '@mui/icons-material/ArrowBack';
+import { IconButton }             from '@mui/material';
+
+import { InfoCard }     from '../../components/InfoCard';
+import { IPlace }       from '../../utils/types';
+import { getPlaceById } from '../../utils/requests';
 
 export const AdditionalPlaceInfoPage = () => {
   const params   = useParams();
@@ -36,12 +37,11 @@ export const AdditionalPlaceInfoPage = () => {
       </IconButton>
 
       <InfoCard
-        title={place?.name || ''}
-        id={place?.id || ''}
-        key={place?.id || ''}
-        mainInfo={place?.formattedAddress || ''}
-        additionalInfo={place?.description || ''}
-        img={place?.photos[0] || ''}
+        title          = {place?.name || ''}
+        id             = {place?.id || ''}
+        mainInfo       = {place?.formattedAddress || ''}
+        additionalInfo = {place?.description || ''}
+        img            = {place?.photos[0] || ''}
       />
     </>
   )
